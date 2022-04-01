@@ -1,6 +1,5 @@
 const express = require("express")
 const app = express()
-
 const morgan = require("morgan")
 
 // * Initial data
@@ -32,7 +31,21 @@ let persons = [
 app.use(express.json())
 
 // request logger
-app.use(morgan("tiny"))
+morgan.token("postBody", function (req, res) {
+  return JSON.stringify(req.body)
+})
+
+app.use(morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms -',
+    "body:",
+    tokens.postBody(req, res),
+  ].join(" ")
+}))
 
 // * Routes
 app.get('/', (request, response) => {
