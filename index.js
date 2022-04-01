@@ -1,6 +1,9 @@
-const express = require('express')
+const express = require("express")
 const app = express()
 
+const morgan = require("morgan")
+
+// * Initial data
 let persons = [
     { 
       "id": 1,
@@ -24,9 +27,14 @@ let persons = [
     }
 ]
 
-// to handle json POST requests
+// * Middlewares
+// handle json POST requests
 app.use(express.json())
 
+// request logger
+app.use(morgan("tiny"))
+
+// * Routes
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -76,9 +84,9 @@ app.post("/api/persons", (request, response) => {
   }
 
   const person = {
+    id: randomId,
     name: body.name,
     number: body.number,
-    id: randomId,
   }
 
   persons = persons.concat(person)
@@ -93,6 +101,14 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end()
 })
 
+// * Middleware if not route is called
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "Unknown endpoint" })
+}
+
+app.use(unknownEndpoint)
+
+// * Port mapping
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
