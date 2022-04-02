@@ -1,8 +1,12 @@
 const express = require("express")
-const app = express()
+const cors = require("cors")
 const morgan = require("morgan")
 
-// * Initial data
+const app = express()
+
+
+
+//* Initial data
 let persons = [
     { 
       "id": 1,
@@ -26,9 +30,9 @@ let persons = [
     }
 ]
 
-// * Middlewares
-// handle json POST requests
-app.use(express.json())
+//* Middlewares
+app.use(express.json()) // handle json POST requests
+app.use(cors()) // allows FE localhost:3000 to connect to BE localhost:3001
 
 // request logger
 morgan.token("postBody", function (req, res) {
@@ -47,7 +51,7 @@ app.use(morgan(function (tokens, req, res) {
   ].join(" ")
 }))
 
-// * Routes
+//* Routes
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -76,9 +80,13 @@ app.get("/api/persons/:id", (request, response) => {
   }
 })
 
+const generateId = (maxId) => {
+  const randomId = Math.floor(Math.random() * maxId)
+  return randomId
+}
+
 app.post("/api/persons", (request, response) => {
   const body = request.body
-  const randomId = Math.floor(Math.random() * 10000)
   const nameAlreadyExists = persons.some(person => 
     person.name === body.name)
 
@@ -97,7 +105,7 @@ app.post("/api/persons", (request, response) => {
   }
 
   const person = {
-    id: randomId,
+    id: generateId(100000),
     name: body.name,
     number: body.number,
   }
@@ -105,6 +113,21 @@ app.post("/api/persons", (request, response) => {
   persons = persons.concat(person)
 
   response.json(person)
+})
+
+app.put("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id)
+  let person = persons.find(person => person.id === id)
+  const body = request.body
+  const updatedPerson = { ...person, number: body.number }
+
+  persons = persons.map(person => 
+    person.id !== id
+      ? person
+      : updatedPerson)
+  
+  console.log("updated person:", updatedPerson);
+  response.json(updatedPerson)
 })
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -122,7 +145,7 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 
 // * Port mapping
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
