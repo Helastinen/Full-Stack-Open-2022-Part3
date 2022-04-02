@@ -33,6 +33,7 @@ let persons = [
 //* Middlewares
 app.use(express.json()) // handle json POST requests
 app.use(cors()) // allows FE localhost:3000 to connect to BE localhost:3001
+app.use(express.static("build")) // BE will show build directory (where FE is) as static content
 
 // request logger
 morgan.token("postBody", function (req, res) {
