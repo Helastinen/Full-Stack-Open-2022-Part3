@@ -1,0 +1,41 @@
+h1 {
+  color: darkgreen;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h2 {
+  color: green;
+  font-style: italic;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-top: 0.2em;
+}
+
+div {
+  padding-bottom: 0.3em;
+}
+
+.person {
+  color: black;
+  padding-top: 3px;
+  font-size: 15px;
+}
+
+.error {
+  color: red;
+  background: lightgrey;
+  font-size: 1.5em;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: green;
+  background: lightgrey;
+  font-size: 1.5em;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
