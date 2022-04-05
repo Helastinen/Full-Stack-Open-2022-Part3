@@ -1,12 +1,12 @@
+require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
 const morgan = require("morgan")
+const Person = require("./models/person")
 
 const app = express()
 
-
-
-//* Initial data
+//* Initial data //
 let persons = [
     { 
       "id": 1,
@@ -30,10 +30,10 @@ let persons = [
     }
 ]
 
-//* Middlewares
+//* Middlewares //
 app.use(express.json()) // handle json POST requests
 app.use(cors()) // allows FE localhost:3000 to connect to BE localhost:3001
-app.use(express.static("build")) // BE will show build directory (where FE is) as static content
+app.use(express.static("build")) // BE will show build directory (where FE code is located) as static content
 
 // request logger
 morgan.token("postBody", function (req, res) {
@@ -52,13 +52,17 @@ app.use(morgan(function (tokens, req, res) {
   ].join(" ")
 }))
 
-//* Routes
+//* Routes //
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons)
+  Person
+    .find({})
+    .then(persons => {
+      response.json(persons)
+    })
 })
 
 app.get("/info", (request, response) => {
@@ -138,14 +142,14 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end()
 })
 
-// * Middleware if not route is called
+// * Middleware if not route is called //
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "Unknown endpoint" })
 }
 
 app.use(unknownEndpoint)
 
-// * Port mapping
+// * Port mapping //
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
