@@ -1,7 +1,7 @@
-require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
 const morgan = require("morgan")
+require("dotenv").config()
 const Person = require("./models/person")
 
 const app = express()
@@ -85,7 +85,7 @@ app.get("/api/persons/:id", (request, response) => {
   }
 })
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body
   const nameAlreadyExists = persons.some(person => 
     person.name === body.name)
@@ -112,6 +112,7 @@ app.post("/api/persons", (request, response) => {
   person
     .save()
     .then(savedPerson => response.json(savedPerson))
+    .catch(error => next(error))
 })
 
 app.put("/api/persons/:id", (request, response) => {
@@ -129,20 +130,33 @@ app.put("/api/persons/:id", (request, response) => {
   response.json(updatedPerson)
 })
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   Person
     .findByIdAndRemove(request.params.id)
     .then(result => {
       response.status(204).end()
     })
+    .catch(error => next(error))
 })
 
-// * Middleware if not route is called //
+// * Middleware if not route is called, DO NOT MOVE //
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "Unknown endpoint" })
 }
 
 app.use(unknownEndpoint)
+
+// * Middleware for error handling, DO NOT MOVE //
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message)
+
+  if ( error.name === "CastError" ) {
+    return response.status(400).send({ error: "malformed id" })
+  }
+  next(error)
+}
+
+app.use(errorHandler)
 
 // * Port mapping //
 const PORT = process.env.PORT || 3001
