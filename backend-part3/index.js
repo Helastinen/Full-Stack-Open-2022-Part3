@@ -115,19 +115,20 @@ app.post("/api/persons", (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.put("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id)
-  let person = persons.find(person => person.id === id)
+app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body
-  const updatedPerson = { ...person, number: body.number }
 
-  persons = persons.map(person => 
-    person.id !== id
-      ? person
-      : updatedPerson)
-  
-  console.log("updated person:", updatedPerson);
-  response.json(updatedPerson)
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person
+    .findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.delete("/api/persons/:id", (request, response, next) => {
