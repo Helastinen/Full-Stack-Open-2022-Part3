@@ -57,14 +57,6 @@ app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
-app.get("/api/persons", (request, response) => {
-  Person
-    .find({})
-    .then(persons => {
-      response.json(persons)
-    })
-})
-
 app.get("/info", (request, response) => {
   const date = new Date()
 
@@ -72,6 +64,14 @@ app.get("/info", (request, response) => {
     `Phonebook has info for ${persons.length} people.<br/>
     ${date}`
   )
+})
+
+app.get("/api/persons", (request, response) => {
+  Person
+    .find({})
+    .then(persons => {
+      response.json(persons)
+    })
 })
 
 app.get("/api/persons/:id", (request, response) => {
@@ -84,11 +84,6 @@ app.get("/api/persons/:id", (request, response) => {
     response.status(404).end()
   }
 })
-
-const generateId = (maxId) => {
-  const randomId = Math.floor(Math.random() * maxId)
-  return randomId
-}
 
 app.post("/api/persons", (request, response) => {
   const body = request.body
@@ -109,15 +104,14 @@ app.post("/api/persons", (request, response) => {
     })
   }
 
-  const person = {
-    id: generateId(100000),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  }
+  })
 
-  persons = persons.concat(person)
-
-  response.json(person)
+  person
+    .save()
+    .then(savedPerson => response.json(savedPerson))
 })
 
 app.put("/api/persons/:id", (request, response) => {
