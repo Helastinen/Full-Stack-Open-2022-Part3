@@ -12,7 +12,6 @@ const Notification = ({ notification, notificationIsError }) => {
   
   return (
     <div className={className}>
-      {console.log("Notification:", notification)}
       {notification}
     </div>
   )

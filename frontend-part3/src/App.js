@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { useState, useEffect } from "react"
 import { PersonForm, Persons, FilterPersons } from "./components/Persons"
 import Notification from "./components/Notification"
@@ -59,13 +60,11 @@ const App = () => {
       //if number update is confirmed, add number to existing person object and render view 
       if (result) {
         const personToUpdate = persons.find(person => person.name === newName)
-        console.log("personToUpdate:", personToUpdate);
         const changedPerson = { ...personToUpdate, number: newNumber }
 
         personsService
           .update(personToUpdate.id, changedPerson)
           .then(returnedPerson => {
-            console.log("returnedPerson:", returnedPerson)
             setPersons(persons.map(person => 
               person.id !== personToUpdate.id
               ? person
@@ -102,6 +101,12 @@ const App = () => {
         setTimeout(() => setNewNotification(""), 5000)
         toggleNotificationIsError(false)
       })
+      .catch(error => {
+        console.log(error.response.data);
+        setNewNotification(`${error.response.data.error}`)
+        setTimeout(() => setNewNotification(""), 5000)
+        toggleNotificationIsError(true)
+      })
   }
 
   return (
@@ -128,7 +133,9 @@ const App = () => {
           </div>
  
         <h2>Numbers</h2>
-        <Notification notification={notification} notificationIsError={notificationIsError} />
+          <Notification 
+            notification={notification} 
+            notificationIsError={notificationIsError} />
 
           <ul>
             <Persons 
