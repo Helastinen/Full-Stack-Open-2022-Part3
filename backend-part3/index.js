@@ -7,7 +7,7 @@ const Person = require("./models/person")
 const app = express()
 
 //* Initial data //
-let persons = [
+/*let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
@@ -28,7 +28,7 @@ let persons = [
       "name": "Mary Poppendieck", 
       "number": "39-23-6423122"
     }
-]
+]*/
 
 //* Middlewares //
 app.use(express.json()) // handle json POST requests
@@ -93,32 +93,24 @@ app.get("/api/persons/:id", (request, response, next) => {
 
 app.post("/api/persons", (request, response, next) => {
   const body = request.body
-  const nameAlreadyExists = persons.some(person => 
-    person.name === body.name)
-
-  if (!body.name) {
-    return response.status(400).json({
-      error: "name is missing"
-    })
-  } else if (!body.number) {
-    return response.status(400).json({
-      error: "number is missing"
-    })
-  } else if (nameAlreadyExists) {
-    return response.status(400).json({
-      error: "name must be unique"
-    })
-  }
 
   const person = new Person({
     name: body.name,
     number: body.number,
   })
 
-  person
-    .save()
-    .then(savedPerson => response.json(savedPerson))
-    .catch(error => next(error))
+  Person
+    .findOne({ name: body.name })
+    .then(nameAlreadyExists => {  
+      if (nameAlreadyExists) {
+        return response.status(400).json({ error: "Name needs to be unique" })
+      } else {
+        person
+          .save()
+          .then(newPerson => response.json(newPerson))
+          .catch(error => next(error))
+      }
+    })
 })
 
 app.put("/api/persons/:id", (request, response, next) => {
@@ -141,7 +133,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch(error => next(error))
 })
 
-// * Middleware if not route is called, DO NOT MOVE //
+// * Middleware if unknown route (any other then above ones) is called, DO NOT MOVE //
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "Unknown endpoint" })
 }

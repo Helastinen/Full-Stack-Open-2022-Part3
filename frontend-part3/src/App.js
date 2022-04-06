@@ -53,12 +53,12 @@ const App = () => {
     const personExists = persons.some(person => person.name === newName)
     
     if (personExists) {
-      const result = window.confirm(
+      const ok = window.confirm(
         `\"${newName}\" has already been added to the phonebook, replace the old number with a new one?`
       )
 
       //if number update is confirmed, add number to existing person object and render view 
-      if (result) {
+      if (ok) {
         const personToUpdate = persons.find(person => person.name === newName)
         const changedPerson = { ...personToUpdate, number: newNumber }
 

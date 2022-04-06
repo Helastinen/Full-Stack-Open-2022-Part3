@@ -11,15 +11,21 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
+const numberValidator = function(v) {
+  return /^\d{2,3}-\d+/.test(v)
+}
+
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
-    minLength: 3,
+    minLength: [ 3, "must be at least 3 chars long" ],
     required: true
   },
   number: {
     type: String,
-    required: true
+    minLength: 8,
+    required: true,
+    validate: [ numberValidator, "must be in following format: 09-123456789 or 040-1234567" ]
   }
 })
 
