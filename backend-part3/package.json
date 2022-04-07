@@ -10,7 +10,8 @@
     "build:ui": "rm -rf build && cd ../frontend-part3/ && npm run build && cp -r build ../backend.part3",
     "deploy": "git push heroku main",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
-    "logs:prod": "heroku logs --tail"
+    "logs:prod": "heroku logs --tail",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.12.0",
     "nodemon": "^2.0.15"
   }
 }

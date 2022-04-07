@@ -8,24 +8,24 @@ const app = express()
 
 //* Initial data //
 /*let persons = [
-    { 
+    {
       "id": 1,
-      "name": "Arto Hellas", 
+      "name": "Arto Hellas",
       "number": "040-123456"
     },
-    { 
+    {
       "id": 2,
-      "name": "Ada Lovelace", 
+      "name": "Ada Lovelace",
       "number": "39-44-5323523"
     },
-    { 
+    {
       "id": 3,
-      "name": "Dan Abramov", 
+      "name": "Dan Abramov",
       "number": "12-43-234345"
     },
-    { 
+    {
       "id": 4,
-      "name": "Mary Poppendieck", 
+      "name": "Mary Poppendieck",
       "number": "39-23-6423122"
     }
 ]*/
@@ -36,7 +36,7 @@ app.use(cors()) // allows FE localhost:3000 to connect to BE localhost:3001
 app.use(express.static("build")) // BE will show build directory (where FE code is located) as static content
 
 // request logger
-morgan.token("reqBody", function (req, res) {
+morgan.token("reqBody", function (req) {
   return JSON.stringify(req.body)
 })
 
@@ -45,21 +45,21 @@ app.use(morgan(function (tokens, req, res) {
     tokens.method(req, res),
     tokens.url(req, res),
     tokens.status(req, res),
-    tokens.res(req, res, 'content-length'), '-',
-    tokens['response-time'](req, res), 'ms -',
+    tokens.res(req, res, "content-length"), "-",
+    tokens["response-time"](req, res), "ms -",
     "req body:",
     tokens.reqBody(req, res),
   ].join(" ")
 }))
 
 //* Routes //
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
+app.get("/", (request, response) => {
+  response.send("<h1>Hello World!</h1>")
 })
 
 app.get("/info", (request, response, next) => {
   const date = new Date()
-  
+
   Person
     .find().estimatedDocumentCount()
     .then(count => {
@@ -101,7 +101,7 @@ app.post("/api/persons", (request, response, next) => {
 
   Person
     .findOne({ name: body.name })
-    .then(nameAlreadyExists => {  
+    .then(nameAlreadyExists => {
       if (nameAlreadyExists) {
         return response.status(400).json({ error: "Name needs to be unique" })
       } else {
@@ -127,7 +127,7 @@ app.put("/api/persons/:id", (request, response, next) => {
 app.delete("/api/persons/:id", (request, response, next) => {
   Person
     .findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
